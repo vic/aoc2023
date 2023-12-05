@@ -3,12 +3,9 @@ help:
   just -l
 
 [private]
-ext-scala:
-  #!/usr/bin/env sh
-  echo scala,sc
-[private]
 init-scala DAY:
   #!/usr/bin/env sh
+  set -e
   cd day{{DAY}}/scala
   cat <<-EOF > Main.scala
   package aoc.day{{DAY}}
@@ -17,51 +14,46 @@ init-scala DAY:
 [private]
 run-scala DAY INPUT:
   #!/usr/bin/env sh
+  set -e
   cd day{{DAY}}/scala
   scala-cli run . -- {{INPUT}}
 
 [private]
-ext-rust:
-  #!/usr/bin/env sh
-  echo rs
-[private]
 init-rust DAY:
   #!/usr/bin/env sh
+  set -e
   cd day{{DAY}}/rust
   cargo init --name "day{{DAY}}"
 [private]
 run-rust DAY INPUT:
   #!/usr/bin/env sh
+  set -e
   cd day{{DAY}}/rust
   cargo run -- {{INPUT}}
 
 [private]
-ext-zig:
-  #!/usr/bin/env sh
-  echo zig
-[private]
 init-zig DAY:
   #!/usr/bin/env sh
+  set -e
   cd day{{DAY}}/zig
   zig init-exe
 [private]
 run-zig DAY INPUT:
   #!/usr/bin/env sh
+  set -e
   cd day{{DAY}}/zig
   zig build run -- {{INPUT}}
 
 [private]
-ext-flix:
-  #!/usr/bin/env sh
-  echo flix
-[private]
 init-flix DAY:
   #!/usr/bin/env sh
+  set -e
   cd day{{DAY}}/flix
   flix init
 [private]
 run-flix DAY INPUT:
   #!/usr/bin/env sh
+  set -e
   cd day{{DAY}}/flix
   flix run -- {{INPUT}}
 
