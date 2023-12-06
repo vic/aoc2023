@@ -23,6 +23,10 @@ run-scala DAY INPUT:
   scala-cli run Main.scala -- {{INPUT}}
 
 [private]
+watch-rust:
+  #!/usr/bin/env sh
+  echo --exts rs
+[private]
 init-rust DAY:
   #!/usr/bin/env sh
   set -e
