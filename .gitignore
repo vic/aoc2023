@@ -9,3 +9,11 @@ devenv.local.nix
 # pre-commit
 .pre-commit-config.yaml
 
+
+.metals
+.bloop
+.scala-build
+.bsp
+
+
+.vscode

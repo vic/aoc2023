@@ -3,6 +3,10 @@ help:
   just -l
 
 [private]
+watch-scala:
+  #!/usr/bin/env sh
+  echo --exts scala,sc
+[private]
 init-scala DAY:
   #!/usr/bin/env sh
   set -e
@@ -14,9 +18,9 @@ init-scala DAY:
 [private]
 run-scala DAY INPUT:
   #!/usr/bin/env sh
-  set -e
+  set -ex
   cd day{{DAY}}/scala
-  scala-cli run . -- {{INPUT}}
+  scala-cli run Main.scala -- {{INPUT}}
 
 [private]
 init-rust DAY:
@@ -71,25 +75,25 @@ init LANG DAY:
 
 
 run LANG DAY:
-  just -q run-{{LANG}} {{DAY}} $PWD/day{{DAY}}/input.txt
+  just run-{{LANG}} {{DAY}} $(pwd)/day{{DAY}}/input.txt
 run-part1 LANG DAY:
-  just -q run-{{LANG}} {{DAY}} $PWD/day{{DAY}}/part1.txt
+  just run-{{LANG}} {{DAY}} $(pwd)/day{{DAY}}/part1.txt
 run-part2 LANG DAY:
-  just -q run-{{LANG}} {{DAY}} $PWD/day{{DAY}}/part2.txt
+  just run-{{LANG}} {{DAY}} $(pwd)/day{{DAY}}/part2.txt
 
 
 watch LANG DAY:
-  just -q watch-input {{LANG}} {{DAY}} $PWD/day{{DAY}}/input.txt
+  just watch-input {{LANG}} {{DAY}} $(pwd)/day{{DAY}}/input.txt
 watch-part1 LANG DAY:
-  just -q watch-input {{LANG}} {{DAY}} $PWD/day{{DAY}}/part1.txt
+  just watch-input {{LANG}} {{DAY}} $(pwd)/day{{DAY}}/part1.txt
 watch-part2 LANG DAY:
-  just -q watch-input {{LANG}} {{DAY}} $PWD/day{{DAY}}/part2.txt
+  just watch-input {{LANG}} {{DAY}} $(pwd)/day{{DAY}}/part2.txt
 
 [private]
 watch-input LANG DAY INPUT:
   #!/usr/bin/env sh
-  set -e
+  set -ex
   cd day{{DAY}}/{{LANG}}
-  watchexec --watch . --workdir . --watch {{INPUT}} --restart --clear reset just -q run-{{LANG}} {{DAY}} {{INPUT}}
+  watchexec --watch . --workdir . --watch {{INPUT}} $(just -q watch-{{LANG}}) --restart just run-{{LANG}} {{DAY}} {{INPUT}}
   
 
