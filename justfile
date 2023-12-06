@@ -80,18 +80,14 @@ init LANG DAY:
 
 run LANG DAY:
   just run-{{LANG}} {{DAY}} $(pwd)/day{{DAY}}/input.txt
-run-part1 LANG DAY:
-  just run-{{LANG}} {{DAY}} $(pwd)/day{{DAY}}/part1.txt
-run-part2 LANG DAY:
-  just run-{{LANG}} {{DAY}} $(pwd)/day{{DAY}}/part2.txt
+run-part LANG DAY PART:
+  just run-{{LANG}} {{DAY}} $(pwd)/day{{DAY}}/part{{PART}}.txt
 
 
 watch LANG DAY:
   just watch-input {{LANG}} {{DAY}} $(pwd)/day{{DAY}}/input.txt
-watch-part1 LANG DAY:
-  just watch-input {{LANG}} {{DAY}} $(pwd)/day{{DAY}}/part1.txt
-watch-part2 LANG DAY:
-  just watch-input {{LANG}} {{DAY}} $(pwd)/day{{DAY}}/part2.txt
+watch-part LANG DAY PART:
+  just watch-input {{LANG}} {{DAY}} $(pwd)/day{{DAY}}/part{{PART}}.txt
 
 [private]
 watch-input LANG DAY INPUT:
