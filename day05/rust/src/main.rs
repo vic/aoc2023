@@ -1,10 +1,10 @@
 
 mod range_intersection;
-use range_intersection::range_intesersect;
+use range_intersection::range_intersect;
 
 use std::{
     fs::File,
-    io::{self, Read},
+    io::{self, Read}, ops::{Range}, env::args
 };
 
 use nom::{
@@ -16,45 +16,107 @@ use nom::{
 };
 
 fn main() -> Result<(), io::Error> {
-    let input = read_file_contents("../input.txt")?;
+    let filename = args().nth(1).expect("No input file provided");
+    let input = read_file_contents(&filename)?;
     let almanac = parse_input(&input).expect("Failed parsing input").1;
-    println!("Hello, world! {:?}", almanac.lowest_location());
+    println!("Lowest location {:?}", almanac.lowest_location());
     Ok(())
 }
 
-#[derive(Debug, PartialEq)]
+//
+//              
+//              .-""""-.
+//             /        \
+//            /_        _\
+//           // \      / \\
+//           |\__\    /__/|
+//            \    ||    /
+//             \        /
+//              \  __  /
+//               '.__.'
+//
+//
+//
+#[derive(Debug, PartialEq, Clone)]
 struct AocRange {
-    dest_range_start: usize,
-    orig_range_start: usize,
-    range_length: usize,
+    orig: Range<usize>,
+    dest: Range<usize>,
 }
 
-trait Apply {
-    fn apply(&self, orig: usize) -> Option<usize>;
-}
-
-impl Apply for AocRange {
-    fn apply(&self, orig: usize) -> Option<usize> {
-        let range = self.orig_range_start..(self.orig_range_start + self.range_length);
-        if range.contains(&orig) {
-            let offset = orig - self.orig_range_start;
-            Some(self.dest_range_start + offset)
-        } else {
-            None
-        }
+impl AocRange {
+    fn width(r: &Range<usize>) -> usize {
+        r.end - r.start
     }
-}
 
-impl Apply for Vec<AocRange> {
-    fn apply(&self, orig: usize) -> Option<usize> {
-        for range in self {
-            if let Some(result) = range.apply(orig) {
-                return Some(result);
+    fn new(orig: Range<usize>, dest: Range<usize>) -> AocRange {
+        assert_eq!(AocRange::width(&orig), AocRange::width(&dest));
+        AocRange { orig: orig, dest: dest }
+    }
+
+    fn slice_input(&self, input: &Range<usize>) -> Option<AocRange> {
+        range_intersect(&self.orig, input).map( |o| {
+            let offset = o.start - self.orig.start;
+            let start = self.dest.start + offset;
+            let end = self.dest.start + offset + AocRange::width(&o);
+            AocRange::new(o, start..end)
+        })
+    }
+
+    fn compose(&self, other: &AocRange) -> Option<AocRange> {
+        other.slice_input(&self.dest).map(|other| {
+            let offset = other.orig.start - self.dest.start;
+            let width = AocRange::width(&other.orig);
+            let start = self.orig.start + offset;
+            let end = self.orig.start + offset + width;
+            AocRange::new(start..end, other.dest)
+        })
+    }
+
+    fn fill_gaps(ranges: Vec<AocRange>) -> Vec<AocRange> {
+        let mut result = ranges;
+        result.sort_by(|a, b| a.orig.start.cmp(&b.orig.start));
+        // fill in the gaps
+        let mut result = result.iter().fold(Vec::<AocRange>::new(), |acc, b| {
+            let mut res = acc;
+            match res.last() {
+            None if b.orig.start > 0 => {
+                let gap: AocRange = AocRange::new(
+                    0..b.orig.start,
+                    0..b.orig.start,  
+                );
+                res.push(gap);
+                res.push(b.to_owned());
+            },
+            None => res.push(b.to_owned()),
+            Some(a) if a.orig.end == b.orig.start => res.push(b.to_owned()),
+            Some(a) => {
+                let gap = AocRange::new(
+                a.orig.end..b.orig.start,
+                a.orig.end..b.orig.start
+                );
+                res.push(gap);
+                res.push(b.to_owned());
             }
-        }
-        Some(orig) // Not mapped by any range, so return the original value
+            }
+            res
+        });
+        match result.last() {
+        None => (),
+        Some(a) => {
+            let gap = AocRange::new(
+                a.orig.end .. usize::MAX,
+                a.orig.end .. usize::MAX
+            );
+            result.push(gap);
+        },
+        }   
+        result
     }
+
+
 }
+
+
 
 #[derive(Debug, PartialEq)]
 struct Almanac {
@@ -68,31 +130,38 @@ struct Almanac {
     humidity_to_location: Vec<AocRange>,
 }
 
-impl Apply for Almanac {
-    fn apply(&self, orig: usize) -> Option<usize> {
-        let mut result = orig;
-        // TODO: This is ugly. Can we do better? How to do function composition in Rust?
-        result = self.seed_to_soil.apply(result)?;
-        result = self.soil_to_fertilizer.apply(result)?;
-        result = self.fertilizer_to_water.apply(result)?;
-        result = self.water_to_light.apply(result)?;
-        result = self.light_to_temperature.apply(result)?;
-        result = self.temperature_to_humidity.apply(result)?;
-        result = self.humidity_to_location.apply(result)?;
-        Some(result)
-    }
+
+fn connect(ax: &Vec<AocRange>, bx: &Vec<AocRange>) -> Vec<AocRange> {
+  ax.iter().flat_map(|a| bx.iter().flat_map(|b| a.compose(b))).collect::<Vec<_>>()
 }
 
 impl Almanac {
-    fn seeds_locations(&self) -> Vec<usize> {
+    fn connect_all(&self) -> Vec<AocRange> {
+       let result = connect(&self.temperature_to_humidity, &self.humidity_to_location);
+       let result = connect(&self.light_to_temperature, &result);
+       let result = connect(&self.water_to_light, &result);
+       let result = connect(&self.fertilizer_to_water, &result);
+       let result = connect(&self.soil_to_fertilizer, &result);
+       let result = connect(&self.seed_to_soil, &result);
+       result
+    }
+
+    fn seeds_ranges(&self) -> Vec<Range<usize>> {
         self.seeds
-            .iter()
-            .map(|seed| self.apply(*seed).unwrap())
+            .as_slice()
+            .chunks(2)
+            .map(|pair| pair[0]..(pair[0]+pair[1]))
             .collect()
     }
 
+    fn restrict(seeds: Vec<Range<usize>>, apps: Vec<AocRange>) -> Vec<AocRange> {
+        seeds.iter().flat_map(|s| apps.iter().flat_map(|a| a.slice_input(s))).collect::<Vec<_>>()
+    }
+
     fn lowest_location(&self) -> usize {
-        *self.seeds_locations().iter().min().unwrap()
+        let ranges = Almanac::restrict(self.seeds_ranges(), self.connect_all());
+        let min_location = ranges.iter().min_by_key(|r| r.dest.start).unwrap().dest.start;
+        min_location
     }
 }
 
@@ -140,7 +209,7 @@ fn parse_map<'a>(map_name: &'a str, input: &'a str) -> nom::IResult<&'a str, Vec
     let (input, _) = tag(" map:\n")(input)?;
     let (input, ranges) = separated_list1(tag("\n"), parse_range)(input)?;
     let (input, _) = tag("\n")(input)?;
-    Ok((input, ranges))
+    Ok((input, AocRange::fill_gaps(ranges)))
 }
 
 fn parse_range(input: &str) -> nom::IResult<&str, AocRange> {
@@ -152,11 +221,10 @@ fn parse_range(input: &str) -> nom::IResult<&str, AocRange> {
     let (input, range_length) = n(input)?;
     Ok((
         input,
-        AocRange {
-            dest_range_start,
-            orig_range_start,
-            range_length,
-        },
+        AocRange::new (
+            orig_range_start..(orig_range_start + range_length),
+            dest_range_start..(dest_range_start + range_length),
+        ),
     ))
 }
 
