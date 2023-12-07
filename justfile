@@ -65,15 +65,21 @@ run-flix DAY INPUT:
   cd day{{DAY}}/flix
   flix run -- {{INPUT}}
 
-init LANG DAY:
+get DAY:
   #!/usr/bin/env sh
   set -e
-  mkdir -p day{{DAY}}/{{LANG}}
+  mkdir -p day{{DAY}}
   cd day{{DAY}}
   aoc download --day {{DAY}} --overwrite --input-file input.txt --puzzle-file README.md
   awk -f ../parts-from-md.awk README.md
   touch part1.txt part2.txt
-  cd {{LANG}}
+
+init LANG DAY:
+  #!/usr/bin/env sh
+  set -e
+  just -q get {{DAY}}
+  mkdir -p day{{DAY}}/{{LANG}}
+  cd day{{DAY}}/{{LANG}}
   curl -sSL https://www.toptal.com/developers/gitignore/api/{{LANG}} -o .gitignore
   just -q init-{{LANG}} {{DAY}}
 
