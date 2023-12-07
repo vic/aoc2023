@@ -1,3 +1,7 @@
+
+mod range_intersection;
+use range_intersection::range_intesersect;
+
 use std::{
     fs::File,
     io::{self, Read},
