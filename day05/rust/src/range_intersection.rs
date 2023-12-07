@@ -1,7 +1,12 @@
-use std::{ops::Range, cmp::{min, max}};
+use std::{
+    cmp::{max, min},
+    ops::Range,
+};
 
-pub fn range_intersect<T>(m: &Range<T>, n: &Range<T>) -> Option<Range<T>> where
-    T: Ord + Copy {
+pub fn range_intersect<T>(m: &Range<T>, n: &Range<T>) -> Option<Range<T>>
+where
+    T: Ord + Copy,
+{
     let (a, b, x, y) = (m.start, m.end, n.start, n.end);
     if b <= x || y <= a {
         None
@@ -9,7 +14,6 @@ pub fn range_intersect<T>(m: &Range<T>, n: &Range<T>) -> Option<Range<T>> where
         Some(max(a, x)..min(b, y))
     }
 }
-
 
 #[cfg(test)]
 mod tests {
