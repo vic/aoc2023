@@ -15,5 +15,6 @@ devenv.local.nix
 .scala-build
 .bsp
 
+_build
 
 .vscode

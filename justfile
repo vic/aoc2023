@@ -65,6 +65,27 @@ run-flix DAY INPUT:
   cd day{{DAY}}/flix
   flix run -- {{INPUT}}
 
+[private]
+watch-ocaml:
+  #!/usr/bin/env sh
+  echo --exts ml,mi
+[private]
+init-ocaml DAY:
+  #!/usr/bin/env sh
+  set -e
+  cd day{{DAY}}
+  rm -rf ocaml
+  mkdir tmp/
+  ( dune init project day{{DAY}} tmp --root tmp --kind executable --no-config )
+  mv tmp/day{{DAY}} ocaml
+  rm -rf tmp
+[private]
+run-ocaml DAY INPUT:
+  #!/usr/bin/env sh
+  set -e
+  cd day{{DAY}}/ocaml
+  dune exec day{{DAY}} -- {{INPUT}}
+
 get DAY:
   #!/usr/bin/env sh
   set -e
@@ -104,6 +125,6 @@ watch-input LANG DAY INPUT:
   #!/usr/bin/env sh
   set -ex
   cd day{{DAY}}/{{LANG}}
-  watchexec --watch . --workdir . --watch {{INPUT}} $(just -q watch-{{LANG}}) --restart just run-{{LANG}} {{DAY}} {{INPUT}}
+  watchexec --watch . --workdir . --watch {{INPUT}} $(just -q watch-{{LANG}}) --restart --clear reset just run-{{LANG}} {{DAY}} {{INPUT}}
   
 
