@@ -1,3 +1,5 @@
+{- -*-haskell-*- -}
+
 day01.part1 : '{IO, Exception} ()
 day01.part1 = do submitSolution (Day 1) (Part 1) solve
 
