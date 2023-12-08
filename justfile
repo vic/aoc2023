@@ -105,7 +105,7 @@ run-lean DAY INPUT:
   #!/usr/bin/env sh
   set -e
   cd day{{DAY}}/lean
-  lake exec day{{DAY}} {INPUT}}
+  lake exec day{{DAY}} {{INPUT}}
 
 # Fetch AdventOfCode README, input and examples for DAY.
 get DAY:

@@ -1,3 +1,6 @@
+#Vim
+*.swp
+
 #nix
 result/
 
