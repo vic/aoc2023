@@ -10,21 +10,21 @@ let read_file_contents filename =
 
 let first_argument = Sys.argv.(1)
 
-let parse_nums s =
-  s 
-  |> String.trim |> String.split_on_char ' ' 
-  |> List.map String.trim  |> List.filter (fun s -> s <> "")
-  |> List.map int_of_string
-
-let replace_in_string s old new_ =
+let replace_in_string old new_ s =
   let re = Str.regexp old in
   Str.global_replace re new_ s
 
+let parse_nums s =
+  s 
+  |> (replace_in_string " " "")
+  |> int_of_string
+  |> (fun x -> [x])
+
 let parse_times s =
-  replace_in_string s "Time: " "" |> parse_nums
+  s |> replace_in_string "Time: " "" |> parse_nums
 
 let parse_distances s =
-  replace_in_string s "Distance: " "" |> parse_nums
+  s |> replace_in_string "Distance: " "" |> parse_nums
 
 let zip_lists l1 l2 =
   List.map2 (fun x y -> (x, y)) l1 l2
