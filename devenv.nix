@@ -25,7 +25,7 @@
   # https://devenv.sh/languages/
   languages.zig.enable = true;
   languages.rust.enable = true;
-  # languages.ocaml.enable = true;
+  languages.ocaml.enable = true;
   languages.scala.enable = true;
   languages.nix.enable = true;
   languages.unison.enable = true;
