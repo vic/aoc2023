@@ -1,0 +1,100 @@
+day01.part1 : '{IO, Exception} ()
+day01.part1 = do submitSolution (Day 1) (Part 1) solve
+
+day01.part1.lineToNum : Text -> Nat
+day01.part1.lineToNum line =
+  use List ++ at
+  use Nat -
+  use Optional toList
+  line
+    |> toCharList
+    |> List.dropWhile isLetter
+    |> List.dropRightWhile isLetter
+    |> (chars -> toList (at 0 chars) ++ toList (at (List.size chars - 1) chars))
+    |> fromCharList
+    |> Nat.fromText
+    |> Optional.getOrElse 0
+
+day01.part1.solve : Text -> Text
+day01.part1.solve input =
+  input
+    |> base.Text.lines
+    |> lib.base.data.List.map lineToNum
+    |> lib.base.Nat.sum
+    |> Nat.toText
+
+day01.part2 : '{IO, Exception} ()
+day01.part2 = do submitSolution (Day 1) (Part 2) (startsWithNamed >> solve)
+
+day01.part2.names : [Text]
+day01.part2.names =
+  [ "zero"
+  , "one"
+  , "two"
+  , "three"
+  , "four"
+  , "five"
+  , "six"
+  , "seven"
+  , "eight"
+  , "nine"
+  ]
+
+day01.part2.removeFirst : Text -> Text -> Text
+day01.part2.removeFirst a text =
+  (_, y) = Text.splitAt (Text.size a) text
+  y
+
+day01.part2.replaceNames : Text -> Text
+day01.part2.replaceNames input =
+  lib.base.data.List.foldLeft replacer input (lib.base.data.List.indexed names)
+
+day01.part2.replacer : Text -> (Text, Nat) -> Text
+day01.part2.replacer = cases
+  input, (name, idx) -> sub name (Nat.toText idx) input
+
+day01.part2.startsWithNamed : Text -> Text
+day01.part2.startsWithNamed = cases
+  t
+    | Text.isEmpty t        -> t
+    | startsWith "zero" t   ->
+      "0" Text.++ day01.part2.startsWithNamed (removeFirst "zero" t)
+    | startsWith "one" t    ->
+      "1" Text.++ day01.part2.startsWithNamed (removeFirst "one" t)
+    | startsWith "two" t    ->
+      "2" Text.++ day01.part2.startsWithNamed (removeFirst "two" t)
+    | startsWith "three" t  ->
+      "3" Text.++ day01.part2.startsWithNamed (removeFirst "three" t)
+    | startsWith "four" t   ->
+      "4" Text.++ day01.part2.startsWithNamed (removeFirst "four" t)
+    | startsWith "five" t   ->
+      "5" Text.++ day01.part2.startsWithNamed (removeFirst "five" t)
+    | startsWith "six" t    ->
+      "6" Text.++ day01.part2.startsWithNamed (removeFirst "six" t)
+    | startsWith "seven" t  ->
+      "7" Text.++ day01.part2.startsWithNamed (removeFirst "seven" t)
+    | startsWith "eight" t  ->
+      "8" Text.++ day01.part2.startsWithNamed (removeFirst "eight" t)
+    | startsWith "nine" t   ->
+      "9" Text.++ day01.part2.startsWithNamed (removeFirst "nine" t)
+    | otherwise             ->
+      (a, b) = Text.splitAt 1 t
+      a Text.++ day01.part2.startsWithNamed b
+
+day01.part2.sub : Text -> Text -> Text -> Text
+day01.part2.sub = cases
+  a, b, input ->
+    use Text ++ splitAt
+    loop : Text -> Text
+    loop input = match Text.indexOf a input with
+      None     -> input
+      Some idx ->
+        (pre, rest) = splitAt idx input
+        (_, tail) = splitAt (Text.size a) rest
+        loop (pre ++ b ++ tail)
+    loop input
+
+
+---- Anything below this line is ignored by Unison.
+
+

@@ -18,3 +18,9 @@ devenv.local.nix
 _build
 
 .vscode
+
+!unison.u
+.unison*
+unison*
+scratch.u
+
