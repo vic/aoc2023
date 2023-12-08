@@ -1,4 +1,4 @@
-[private]
+# Show available tasks.
 help:
   just -l
 
@@ -91,7 +91,7 @@ run-ocaml DAY INPUT:
 watch-lean:
   #!/usr/bin/env sh
   echo --exts lean
-#[private]
+[private]
 init-lean DAY:
   #!/usr/bin/env sh
   set -e
@@ -107,6 +107,7 @@ run-lean DAY INPUT:
   cd day{{DAY}}/lean
   lake exec day{{DAY}} {INPUT}}
 
+# Fetch AdventOfCode README, input and examples for DAY.
 get DAY:
   #!/usr/bin/env sh
   set -e
@@ -116,6 +117,7 @@ get DAY:
   awk -f ../parts-from-md.awk README.md
   touch part1.txt part2.txt
 
+# Initialize a new LANG project for solving DAY.
 init LANG DAY:
   #!/usr/bin/env sh
   set -e
@@ -126,18 +128,24 @@ init LANG DAY:
   just -q init-{{LANG}} {{DAY}}
 
 
+# Run LANG project with the personalized input for DAY.
 run LANG DAY:
   just run-{{LANG}} {{DAY}} $(pwd)/day{{DAY}}/input.txt
+# Run LANG project with the first example input from README.
 run-part1 LANG DAY:
   just run-{{LANG}} {{DAY}} $(pwd)/day{{DAY}}/part1.txt
+# Run LANG project with the second example input from README.
 run-part2 LANG DAY:
   just run-{{LANG}} {{DAY}} $(pwd)/day{{DAY}}/part2.txt
 
 
+# Watch for changes and run LANG project with the personalized input for DAY.
 watch LANG DAY:
   just watch-input {{LANG}} {{DAY}} $(pwd)/day{{DAY}}/input.txt
+# Watch for changes and run LANG project with the first example input from README.
 watch-part1 LANG DAY:
   just watch-input {{LANG}} {{DAY}} $(pwd)/day{{DAY}}/part1.txt
+# Watch for changes and run LANG project with the second example input from README.
 watch-part2 LANG DAY:
   just watch-input {{LANG}} {{DAY}} $(pwd)/day{{DAY}}/part2.txt
 
