@@ -86,6 +86,27 @@ run-ocaml DAY INPUT:
   cd day{{DAY}}/ocaml
   dune exec day{{DAY}} -- {{INPUT}}
 
+
+[private]
+watch-lean:
+  #!/usr/bin/env sh
+  echo --exts lean
+#[private]
+init-lean DAY:
+  #!/usr/bin/env sh
+  set -e
+  cd day{{DAY}}
+  rm -rf lean
+  lake new day{{DAY}}  exe
+  mv day{{DAY}} lean
+  rm -rf lean/.git
+[private]
+run-lean DAY INPUT:
+  #!/usr/bin/env sh
+  set -e
+  cd day{{DAY}}/lean
+  lake exec day{{DAY}} {INPUT}}
+
 get DAY:
   #!/usr/bin/env sh
   set -e

@@ -1,8 +1,8 @@
-{ pkgs, ... }:
+{ pkgs, lib, self', ... }:
 
 {
   # https://devenv.sh/basics/
-  #env.GREET = "devenv";
+  # env.LD_LIBRARY_PATH = lib.makeLibraryPath [ pkgs.stdenv.cc.cc ];
 
   # https://devenv.sh/packages/
   packages = with pkgs; [
@@ -12,6 +12,7 @@
     just
     helix
     jq
+    self'.packages.lean4-bin
     (flix.override { jre = pkgs.graalvm-ce; })
     nixpkgs-fmt
   ];
