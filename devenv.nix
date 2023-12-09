@@ -30,6 +30,7 @@
   languages.scala.enable = true;
   languages.nix.enable = true;
   languages.unison.enable = true;
+  languages.go.enable = true;
 
   languages.ocaml.packages = pkgs.ocaml-ng.ocamlPackages_5_1;
   languages.java.jdk.package = pkgs.graalvm-ce;

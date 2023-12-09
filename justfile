@@ -23,6 +23,30 @@ run-scala DAY INPUT:
   scala-cli run Main.scala -- {{INPUT}}
 
 [private]
+watch-go:
+  #!/usr/bin/env sh
+  echo --exts go
+[private]
+init-go DAY:
+  #!/usr/bin/env sh
+  set -e
+  cd day{{DAY}}/go
+  cat <<-EOF > main.go
+  package main
+  import("fmt")
+  func main () { 
+    fmt.Println("hello") 
+  }
+  EOF
+[private]
+run-go DAY INPUT:
+  #!/usr/bin/env sh
+  set -ex
+  cd day{{DAY}}/go
+  go run main.go {{INPUT}}
+
+
+[private]
 watch-rust:
   #!/usr/bin/env sh
   echo --exts rs
