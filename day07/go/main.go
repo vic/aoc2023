@@ -12,7 +12,7 @@ import (
 	"sync"
 )
 
-const cards = "23456789TJQKA"
+const cards = "J23456789TQKA"
 
 type HandType uint8
 
@@ -62,26 +62,62 @@ func findHandType(cards string) (HandType, error) {
 		m[c]++
 	}
 	l := len(m)
+	j, hasJ := m['J']
 	switch l {
+	// (value: 7) where all five cards have the same label: AAAAA
 	case 1:
 		return FiveOfAKind, nil
 	case 5:
+		if hasJ && j == 1 {
+			// J: can promote HighCard to (value: 2) OnePair
+			return OnePair, nil
+		}
+		// (value: 1)  where all cards' labels are distinct: 23456
 		return HighCard, nil
 	case 4:
+		if hasJ {
+			// can promote OnePair to (value: 4) ThreeOfAKind (making the J the 3rd card)
+			return ThreeOfAKind, nil
+		}
+		// (value: 2) where two cards share one label, and the other three cards have a different label from the pair and each other: A23A4
 		return OnePair, nil
 	case 3:
 		for _, v := range m {
 			if v == 3 {
+				if hasJ {
+					// Can promote ThreeOfAKind to (value: 6) FourOfAKind
+					return FourOfAKind, nil
+				}
+				// (value: 4) where three cards have the same label, and the remaining two cards are each different from any other card in the hand: TTT98
 				return ThreeOfAKind, nil
 			}
 		}
+		if hasJ && j == 1 {
+			// Can promote TwoPair to (value: 5) FullHouse
+			return FullHouse, nil
+		}
+		if hasJ && j == 2 {
+			// Can promote TwoPair to (value: 6) FourOfAKind
+			return FourOfAKind, nil
+		}
+		// (value: 3) where two cards share one label, two other cards share a second label, and the remaining card has a third label: 23432
 		return TwoPair, nil
 	case 2:
 		for _, v := range m {
 			if v == 4 {
+				if hasJ {
+					// Can promote FourOfAKind to (value: 7) FiveOfAKind
+					return FiveOfAKind, nil
+				}
+				// (value: 6) where four cards have the same label and one card has a different label: AA8AA
 				return FourOfAKind, nil
 			}
 		}
+		if hasJ {
+			// Can promote FullHouse to (value: 7) FiveOfAKind
+			return FiveOfAKind, nil
+		}
+		// (value: 5) where three cards have the same label, and the remaining two cards share a different label: 23332
 		return FullHouse, nil
 	}
 	return 0, errors.New("Invalid hand")
