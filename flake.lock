@@ -125,6 +125,19 @@
         "url": "https://github.com/leanprover/lean4/releases/download/v4.4.0-rc1/lean-4.4.0-rc1-darwin.zip"
       }
     },
+    "lean4-bin-x86_64-linux": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1701313921,
+        "narHash": "sha256-ze5jmATKW4uGWA2S96Nb85qNryq3sUJBU2mC9Z6PVQo=",
+        "type": "tarball",
+        "url": "https://github.com/leanprover/lean4/releases/download/v4.4.0-rc1/lean-4.4.0-rc1-linux.zip"
+      },
+      "original": {
+        "type": "tarball",
+        "url": "https://github.com/leanprover/lean4/releases/download/v4.4.0-rc1/lean-4.4.0-rc1-linux.zip"
+      }
+    },
     "lowdown-src": {
       "flake": false,
       "locked": {
@@ -316,6 +329,7 @@
         "devenv": "devenv",
         "flake-parts": "flake-parts",
         "lean4-bin-x86_64-darwin": "lean4-bin-x86_64-darwin",
+        "lean4-bin-x86_64-linux": "lean4-bin-x86_64-linux",
         "mk-shell-bin": "mk-shell-bin",
         "nix2container": "nix2container",
         "nixpkgs": "nixpkgs_2"

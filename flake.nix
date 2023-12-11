@@ -8,6 +8,9 @@
 
     lean4-bin-x86_64-darwin.url = "https://github.com/leanprover/lean4/releases/download/v4.4.0-rc1/lean-4.4.0-rc1-darwin.zip";
     lean4-bin-x86_64-darwin.flake = false;
+
+    lean4-bin-x86_64-linux.url = "https://github.com/leanprover/lean4/releases/download/v4.4.0-rc1/lean-4.4.0-rc1-linux.zip";
+    lean4-bin-x86_64-linux.flake = false;
   };
 
   outputs = inputs@{ nixpkgs, flake-parts, ... }:
