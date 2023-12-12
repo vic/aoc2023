@@ -12,7 +12,7 @@
     just
     helix
     jq
-    self'.packages.lean4-bin
+    lean4 # self'.packages.lean4-bin
     (flix.override { jre = pkgs.graalvm-ce; })
     nixpkgs-fmt
   ];

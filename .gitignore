@@ -1,8 +1,9 @@
 #Vim
 *.swp
+.wsl
 
 #nix
-result/
+/result
 
 # Devenv
 .devenv*

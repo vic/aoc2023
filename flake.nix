@@ -5,17 +5,11 @@
     mk-shell-bin.url = "github:rrbutani/nix-mk-shell-bin";
     nix2container.url = "github:nlewo/nix2container";
     nix2container.inputs.nixpkgs.follows = "nixpkgs";
-
-    lean4-bin-x86_64-darwin.url = "https://github.com/leanprover/lean4/releases/download/v4.4.0-rc1/lean-4.4.0-rc1-darwin.zip";
-    lean4-bin-x86_64-darwin.flake = false;
-
-    lean4-bin-x86_64-linux.url = "https://github.com/leanprover/lean4/releases/download/v4.4.0-rc1/lean-4.4.0-rc1-linux.zip";
-    lean4-bin-x86_64-linux.flake = false;
   };
 
   outputs = inputs@{ nixpkgs, flake-parts, ... }:
-    flake-parts.lib.mkFlake { inherit inputs; } {
-      systems = nixpkgs.lib.systems.flakeExposed;
+    flake-parts.lib.mkFlake { inherit inputs; } ({ lib, ... }: {
       imports = [ inputs.devenv.flakeModule ./flakeModules ];
-    };
+      config.systems = nixpkgs.lib.systems.flakeExposed;
+    });
 }

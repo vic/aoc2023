@@ -1,6 +1,5 @@
 top@{ ... }: {
   imports = [ 
-    ./lean4-bin
   ];
 
   perSystem = sys@{ pkgs, config, self', ... }: {
